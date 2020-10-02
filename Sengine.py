@@ -114,7 +114,7 @@ class MyThread(Thread):
             for i in url_href:
 
                 url_tmp = "https://www.sogou.com" + str(i)
-                tmp_response = requests.get(url=url_tmp, headers=headers, timeout=6)  ## sogo做了两次跳转，需要爬取两次url结果才可得出真的。
+                tmp_response = requests.get(url=url_tmp, headers=headers, timeout=6)
                 real_url_tmp = re.findall(r'URL=\'(.*?)\'', tmp_response.text, re.S)[0]
                 real_url = real_url_tmp.split('/', -1)
                 real_url = real_url[0] + "//" + real_url[2]  
@@ -146,9 +146,9 @@ class MyThread(Thread):
 
 
 lock = Lock()
-def main(wd, pages):
+def main(wd, pages, threads):
     thread_list = []
-    thread_num = 50
+    thread_num = threads
     qu = Queue()
 
     for num_baidu in range(0, int(pages) * 10 + 10 + 1, 10):
@@ -173,6 +173,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="公众号：一位不愿透露姓名的热心网友")
     parser.add_argument('-W', '--keyword', help='搜索的关键词 ', metavar='')
     parser.add_argument('-P', '--pages', metavar='', type=int, help='爬取的页面数 ')
+    parser.add_argument('-t','--threads',metavar='', type=int,help="线程大小，默认30。",default=30)
     args = parser.parse_args()
     if len(sys.argv) < 2:
         print('请输入参数！')
@@ -180,4 +181,4 @@ if __name__ == '__main__':
         print("Example: Sengine.py  -W \"site:baidu.com\" -P 10")
         sys.exit(-1)
     else:
-        main(args.keyword, args.pages)
+        main(args.keyword, args.pages, args.threads)
